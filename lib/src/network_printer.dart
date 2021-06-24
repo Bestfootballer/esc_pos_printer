@@ -8,8 +8,10 @@
 
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
-import 'package:esc_pos_utils/esc_pos_utils.dart';
+
+import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:image/image.dart';
+
 import './enums.dart';
 
 /// Network Printer
@@ -21,10 +23,10 @@ class NetworkPrinter {
 
   final PaperSize _paperSize;
   final CapabilityProfile _profile;
-  String _host;
-  int _port;
-  Generator _generator;
-  Socket _socket;
+  late String _host;
+  late int _port;
+  late Generator _generator;
+  late Socket _socket;
 
   int get port => _port;
   String get host => _host;
@@ -45,7 +47,7 @@ class NetworkPrinter {
   }
 
   /// [delayMs]: milliseconds to wait after destroying the socket
-  void disconnect({int delayMs}) async {
+  void disconnect({int? delayMs}) async {
     _socket.destroy();
     if (delayMs != null) {
       await Future.delayed(Duration(milliseconds: delayMs), () => null);
@@ -62,7 +64,7 @@ class NetworkPrinter {
     PosStyles styles = const PosStyles(),
     int linesAfter = 0,
     bool containsChinese = false,
-    int maxCharsPerLine,
+    int? maxCharsPerLine,
   }) {
     _socket.add(_generator.text(text,
         styles: styles,
@@ -75,7 +77,7 @@ class NetworkPrinter {
     _socket.add(_generator.setGlobalCodeTable(codeTable));
   }
 
-  void setGlobalFont(PosFontType font, {int maxCharsPerLine}) {
+  void setGlobalFont(PosFontType font, {int? maxCharsPerLine}) {
     _socket
         .add(_generator.setGlobalFont(font, maxCharsPerLine: maxCharsPerLine));
   }
@@ -100,7 +102,7 @@ class NetworkPrinter {
     _socket.add(_generator.cut(mode: mode));
   }
 
-  void printCodeTable({String codeTable}) {
+  void printCodeTable({String? codeTable}) {
     _socket.add(_generator.printCodeTable(codeTable: codeTable));
   }
 
@@ -138,9 +140,9 @@ class NetworkPrinter {
 
   void barcode(
     Barcode barcode, {
-    int width,
-    int height,
-    BarcodeFont font,
+    int? width,
+    int? height,
+    BarcodeFont? font,
     BarcodeText textPos = BarcodeText.below,
     PosAlign align = PosAlign.center,
   }) {
@@ -167,7 +169,7 @@ class NetworkPrinter {
     _socket.add(_generator.drawer(pin: pin));
   }
 
-  void hr({String ch = '-', int len, int linesAfter = 0}) {
+  void hr({String ch = '-', int? len, int linesAfter = 0}) {
     _socket.add(_generator.hr(ch: ch, linesAfter: linesAfter));
   }
 
@@ -175,7 +177,7 @@ class NetworkPrinter {
     Uint8List textBytes, {
     PosStyles styles = const PosStyles(),
     int linesAfter = 0,
-    int maxCharsPerLine,
+    int? maxCharsPerLine,
   }) {
     _socket.add(_generator.textEncoded(
       textBytes,
